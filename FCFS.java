@@ -8,13 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class FCFS {
-    List<Process> processes; 
+public class FCFS extends Algorithm{
+    List<Process> processes;
     
     public FCFS(List<Process> Processes) {
         this.processes = Processes; //initialize with the list from main
     }
     
+    @Override
     public void Scheduling() {
         processes.sort(Comparator.comparingInt(p -> p.at)); //sort by arrival time
         List<Process> waitingQueue = new ArrayList<>();
@@ -45,7 +46,7 @@ public class FCFS {
                 Process temp = readyQueue.getFirst(); //temp process
                 
                 temp.executedTime++; //increment the time by 1
-                temp.remainingTIme--; //decrement the time left by 1
+                temp.remainingTime--; //decrement the time left by 1
                 
                 //if the process has io times and if the start time equals the time that the process has
                 //executued then proceed
@@ -56,7 +57,7 @@ public class FCFS {
                     waitingQueue.add(temp); //add to waiting queue
                     readyQueue.removeFirst(); //remove from ready queue
                 } 
-                else if(temp.remainingTIme <= 0){ //if the process is done
+                else if(temp.remainingTime <= 0){ //if the process is done
                     temp.completionTime = time + 1; //add 1 becuase time updates at the end
                     temp.turnaroundTime = temp.completionTime - temp.at; //given calculations
                     temp.waitingTime = temp.turnaroundTime - temp.bt; //same as above
@@ -66,49 +67,9 @@ public class FCFS {
             }
             time++; //update time
         }
-        printGanttChart(processes); //doesn't work
+        printTable(processes);
+        averages(processes);
 
     }
     
-    public boolean allFinished(List<Process> processes) {
-        boolean returnMe = true; //declare the variable
-        for(Process p : processes) { //loop
-            if(!p.isFinished) { //if any aren't finished
-                returnMe = false; //update
-            }
-        }
-        return returnMe;
-    }
-    
-    
-    //this doesn't work rn I just used it as a visual, its from assignment 5
-    public void printGanttChart(List<Process> processes) {
-        int finalTime = 0;
-        for(int i = 0; i < processes.size(); i++) {
-            if(finalTime < processes.get(i).completionTime) {
-                finalTime = processes.get(i).completionTime;
-            }
-        }
-        
-        System.out.println("Gantt Chart: ");
-        
-        for(int i = 0; i < processes.size(); i++) {
-            
-            System.out.print("\nProcess " + (i + 1) + ": ");
-            
-            for(int j = 0; j < finalTime; j++) {
-                if(j < processes.get(i).at) {
-                    System.out.print("- ");
-                } else if(j >= processes.get(i).at && j < 
-                        processes.get(i).completionTime - processes.get(i).bt) {
-                    System.out.print("W ");
-                } else if(j >= processes.get(i).completionTime - processes.get(i).bt
-                        && j < processes.get(i).completionTime) {
-                    System.out.print("R ");
-                } else {
-                    System.out.print("- ");
-                }
-            }
-        }
-    }
 }
