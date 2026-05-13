@@ -19,11 +19,11 @@ public abstract class Algorithm {
     
     //this print table function just prints out the numbers in a table
     public void printTable(List<Process> processes) {
-        System.out.println("pID\tat\tbt\tct\tTAT\twt");
+        System.out.println("pID\tat\tbt\tPri\tct\tTAT\twt");
         
         //looping through all processes and printing them
         for(Process p : processes) {
-            System.out.println(p.id + "\t" + p.at + "\t" + p.bt + "\t" + p.completionTime + 
+            System.out.println(p.id + "\t" + p.at + "\t" + p.bt + "\t" + p.priority + "\t" + p.completionTime + 
                     "\t" + p.turnaroundTime + "\t" + p.waitingTime);
         }
     }
