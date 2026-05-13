@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PriorityScheduling extends Algorithm {
-    List<Process> processes;
+public class PriorityScheduling extends Algorithm{
+     List<Process> processes;
 
     public PriorityScheduling(List<Process> processes) {
         this.processes = processes;
     }
-
+    
+    @Override
     public void Scheduling() {
         List<Process> waitingQueue = new ArrayList<>();
         List<Process> readyQueue = new ArrayList<>();
@@ -96,10 +97,10 @@ public class PriorityScheduling extends Algorithm {
                 time++;
             }
         }
-
-        printResults();
+        printTable(processes);
+        averages(processes);
     }
-
+    
     public Process getHighestPriorityProcess(List<Process> readyQueue) {
         Process highest = readyQueue.get(0);
 
@@ -119,33 +120,5 @@ public class PriorityScheduling extends Algorithm {
         }
 
         return highest;
-    }
-
-   
-
-    public void printResults() {
-        System.out.println("Priority Scheduling Results:");
-        System.out.println("PID\tAT\tBT\tPR\tCT\tTAT\tWT");
-
-        double totalWT = 0;
-        double totalTAT = 0;
-
-        for (Process p : processes) {
-            System.out.println(
-                p.id + "\t" +
-                p.at + "\t" +
-                p.bt + "\t" +
-                p.priority + "\t" +
-                p.completionTime + "\t" +
-                p.turnaroundTime + "\t" +
-                p.waitingTime
-            );
-
-            totalWT += p.waitingTime;
-            totalTAT += p.turnaroundTime;
-        }
-
-        System.out.printf("Average Waiting Time: %.2f%n", totalWT / processes.size());
-        System.out.printf("Average Turnaround Time: %.2f%n", totalTAT / processes.size());
     }
 }
