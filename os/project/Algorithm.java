@@ -41,4 +41,57 @@ public abstract class Algorithm {
         System.out.println("Average waiting time: " + (avgWaitingTime / processes.size()));
         System.out.println("Average Turnaround time: " + (avgTurnAroundTime / processes.size()));
     }
+    
+    //print Gantt Chart method
+    public void printGanttChart(List<Timeline> timeline) {
+         System.out.println("\n--------- GANTT CHART ----------\n");
+
+        // Process labels
+        for(Timeline t : timeline) {
+
+            int width = (t.end - t.start) * 4;
+            String label;
+            
+            //pid 0 will always be the id for idle
+            if(t.pid == 0) {
+                label = "IDLE";
+            }
+            else {
+                label = "P" + t.pid;
+            }
+            
+            System.out.print("|");
+
+            int leftPadding = (width - label.length()) / 2;
+            int rightPadding = width - label.length() - leftPadding;
+
+            for(int i = 0; i < leftPadding; i++) {
+                System.out.print(" ");
+            }
+
+            System.out.print(label);
+
+            for(int i = 0; i < rightPadding; i++) {
+                System.out.print(" ");
+            }
+        }
+        System.out.println("|");
+
+        // Timeline numbers
+        System.out.print(timeline.get(0).start);
+
+        for(Timeline t : timeline) {
+
+            int width = (t.end - t.start) * 4;
+            
+            //see how long the number is so the width isn't offset
+            for(int i = 0; i < width - String.valueOf(t.end).length() + 1; i++) {
+                System.out.print(" ");
+            }
+
+            System.out.print(t.end);
+        }
+
+        System.out.println("\n");
+    }
 }
