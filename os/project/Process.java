@@ -13,8 +13,9 @@ public class Process {
     boolean isWaitingQ = false; //whether it is in the waiting queue or not
     int executedTime = 0; //how much time the process has actually executed
     int remainingTime; //how much time the process has left
-    int ioEndTime; //io end time based on the whole scheduling time
+    int ioEndTime = 0; //io end time based on the whole scheduling time
     boolean isFinished = false; //whether the process is finished or not
+    boolean hasBeenWait = false;
     
     public Process(int id, int at, int bt, int priority, int iost, int ioet) {
         this.id = id;
