@@ -22,18 +22,20 @@ public class RoundRobin extends Algorithm{
     public void Scheduling() {
         List<Process> waitingQueue = new ArrayList<>();
         LinkedList<Process> readyQueue = new LinkedList<>();
+        List<Timeline> timeline = new ArrayList<>();
         
         int time = 0;
+        int startTime;
+        
+        //looping through the processes
+        for(Process p : processes) {
+            if(time == p.at) {
+                readyQueue.add(p);
+            }
+        }
         
         //using the same function as before just from abstract class now
         while(!allFinished(processes)){    
-            
-            //looping through the processes
-            for(Process p : processes) {
-                if(time == p.at) {
-                    readyQueue.add(p);
-                }
-            }
             
             //if the readyQueue is not empty
             if(!readyQueue.isEmpty()) {
@@ -46,18 +48,7 @@ public class RoundRobin extends Algorithm{
                     
                 //goes until it reaches the lower of the two above values
                 for(int i = 0; i < lowest; i++) {
-                    //increment
-                    temp.executedTime++;
-                    temp.remainingTime--;
-                    time++;
-                    
-                    //processes can come in during a RR cycle so gotta do this
-                    for(Process p : processes) {
-                        if(time == p.at) {
-                            readyQueue.add(p);
-                        }
-                    }
-                    
+
                     Iterator<Process> it = waitingQueue.iterator(); //have to keep instantiating the iterator
                     
                     while(it.hasNext()) {
@@ -68,14 +59,40 @@ public class RoundRobin extends Algorithm{
                             it.remove(); //remove it from the waiting queue
                         }
                     }
+                  
+                    startTime = time;
+                    temp.executedTime++;
+                    temp.remainingTime--;
+                    //if timeline isn't empty and its the same process 1 cycle later
+                    if(!timeline.isEmpty() && 
+                            timeline.get(timeline.size() - 1).pid == temp.id &&
+                            timeline.get(timeline.size() - 1).end == startTime) {
+                        //make the time of the process increase by 1
+                        timeline.get(timeline.size() - 1).end = time + 1;
+                    }
+                    else {
+                        //otherwise add a new object to the list that holds the initial time
+                        //this process was first active
+                        timeline.add(new Timeline(temp.id, startTime, time + 1));
+                    }
+                    
+                    time++;
+                                
+                    //processes can come in during a RR cycle so gotta do this
+                    for(Process p : processes) {
+                        if(time == p.at) {
+                            readyQueue.add(p);
+                        }
+                    }
                         
                     //if its time for waitingQueue add it to the waitingQueue and leave the loop
-                    if(temp.ioTimes != null && temp.ioTimes[0] == temp.executedTime) {
+                    if(temp.ioTimes[1] != 0 && temp.ioTimes[0] == temp.executedTime) {
                         waitingQueue.add(temp);
                         temp.ioEndTime = time + temp.ioTimes[1];
                         temp.isWaitingQ = true;
                         break;
                     }
+                    
                 }
                 //if the process is done
                 if(temp.remainingTime <= 0) {
@@ -91,7 +108,6 @@ public class RoundRobin extends Algorithm{
             }
             //increment the time while cpu is inactive and processes the waitingQueue
             else{
-                time++;
                 Iterator<Process> it = waitingQueue.iterator(); //have to keep instantiating the iterator
                     
                 while(it.hasNext()) {
@@ -102,10 +118,30 @@ public class RoundRobin extends Algorithm{
                         it.remove(); //remove it from the waiting queue
                     }
                 }
+                
+                //same logic as above but for the cpu idling 
+                if(!timeline.isEmpty() &&
+                        timeline.get(timeline.size() - 1).pid == 0 &&
+                        timeline.get(timeline.size() - 1).end == time) {
+                    timeline.get(timeline.size() - 1).end = time + 1;
+                }
+                else {
+                    timeline.add(new Timeline(0, time, time + 1));
+                }
+                
+                time++;
+                
+                //looping through the processes
+                for(Process p : processes) {
+                    if(time == p.at) {
+                        readyQueue.add(p);
+                    }
+                }
             }
         }
         //print values from the Algorithm class
         printTable(processes);
         averages(processes);
+        printGanttChart(timeline);
     }
 }
